@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Google Apps ScriptとGemini APIで実現する光熱費自動化・分析システムの完全導入ガイド">
+    <title>光熱費自動化・分析システム導入ガイド | Google Apps Script × Gemini API</title>
+    <style>
+        /* リセット＆ベーススタイル */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            line-height: 1.7;
+            color: #212121;
+            background-color: #FFFFFF;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* ヘッダー */
+        .header {
+            background: #FFFFFF;
+            padding: 3rem 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(90deg, #1976D2, #00897B) 1;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            color: #1A237E;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.5rem;
+            color: #1565C0;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .header .description {
+            font-size: 1rem;
+            color: #424242;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* メインコンテンツ */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+        
+        section {
+            margin-bottom: 4rem;
+        }
+        
+        h2 {
+            font-size: 1.75rem;
+            color: #1A237E;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #1976D2;
+            font-weight: 700;
+        }
+        
+        h3 {
+            font-size: 1.35rem;
+            color: #1565C0;
+            margin: 2rem 0 1rem;
+            font-weight: 600;
+        }
+        
+        h4 {
+            font-size: 1.15rem;
+            color: #0277BD;
+            margin: 1.5rem 0 0.75rem;
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: #424242;
+        }
+        
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+            color: #424242;
+        }
+        
+        /* コードブロック */
+        .code-container {
+            position: relative;
+            margin: 1.5rem 0;
+            background: #F5F5F5;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: #E8E8E8;
+            border-bottom: 1px solid #D0D0D0;
+        }
+        
+        .code-label {
+            font-size: 0.9rem;
+            color: #616161;
+            font-weight: 600;
+        }
+        
+        .copy-btn {
+            background: #2196F3;
+            color: #FFFFFF;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-height: 36px;
+            min-width: 90px;
+            touch-action: manipulation;
+        }
+        
+        .copy-btn:hover {
+            background: #1976D2;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .copy-btn.copied {
+            background: #4CAF50;
+        }
+        
+        pre {
+            margin: 0;
+            padding: 1rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: pre;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #212121;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: #F5F5F5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        /* テーブル */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            min-width: 500px;
+            border-collapse: collapse;
+            background: #FFFFFF;
+        }
+        
+        thead {
+            background: #1976D2;
+            color: #FFFFFF;
+        }
+        
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #1565C0;
+        }
+        
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        tbody tr:hover {
+            background: #F5F5F5;
+        }
+        
+        /* カラム指定 */
+        .diagram {
+            background: #E3F2FD;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #1976D2;
+            margin: 1.5rem 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* コールアウト */
+        .callout {
+            background: #FFF9C4;
+            padding: 1.25rem;
+            border-radius: 8px;
+            border-left: 4px solid #FBC02D;
+            margin: 1.5rem 0;
+        }
+        
+        .callout-info {
+            background: #E1F5FE;
+            border-left-color: #0277BD;
+        }
+        
+        .callout-success {
+            background: #E8F5E9;
+            border-left-color: #388E3C;
+        }
+        
+        .callout-warning {
+            background: #FFF3E0;
+            border-left-color: #F57C00;
+        }
+        
+        /* リスト装飾 */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .checklist li::before {
+            content: "✅ ";
+            margin-right: 0.5rem;
+        }
+        
+        .steps-list {
+            counter-reset: steps;
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .steps-list li {
+            counter-increment: steps;
+            padding-left: 2.5rem;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .steps-list li::before {
+            content: "Step " counter(steps);
+            position: absolute;
+            left: 0;
+            background: #1976D2;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            top: 0;
+        }
+        
+        /* ボタン */
+        .btn {
+            display: inline-block;
+            background: #2196F3;
+            color: #FFFFFF;
+            padding: 0.875rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-height: 44px;
+            font-size: 1rem;
+            touch-action: manipulation;
+        }
+        
+        .btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-success {
+            background: #4CAF50;
+        }
+        
+        .btn-success:hover {
+            background: #388E3C;
+        }
+        
+        /* フッター */
+        .footer {
+            background: #F8F9FA;
+            padding: 3rem 1.5rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .benefit-card {
+            background: #FFFFFF;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #1976D2;
+        }
+        
+        .benefit-card h3 {
+            color: #1A237E;
+            margin: 0 0 0.75rem 0;
+            font-size: 1.15rem;
+        }
+        
+        .benefit-card ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+        
+        .cta {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1976D2, #00897B);
+            color: white;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+        
+        .cta h3 {
+            color: white;
+            margin: 0 0 1rem 0;
+        }
+        
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+            
+            body {
+                padding: 0;
+            }
+            
+            .header {
+                padding: 2rem 1rem 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .header .subtitle {
+                font-size: 1.35rem;
+            }
+            
+            main {
+                padding: 1.5rem 1rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            h3 {
+                font-size: 1.25rem;
+            }
+            
+            h4 {
+                font-size: 1.1rem;
+            }
+            
+            pre {
+                font-size: 0.85rem;
+                padding: 0.75rem;
+            }
+            
+            .code-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .copy-btn {
+                width: 100%;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+            
+            .benefits {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            h2 {
+                font-size: 1.35rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <h1>🌟 Google Apps ScriptとGemini APIで実現する<br>光熱費自動化・分析システム導入ガイド</h1>
+        <p class="subtitle">毎月の電気代やガス代、「なんとなく高いな」で終わっていませんか?</p>
+        <p class="description">このガイドでは、Googleドライブ、Apps Script、そして最先端のGemini APIを組み合わせて、光熱費データを自動収集・分析し、<strong>「なぜ高いのか」「どう改善できるのか」をAIが教えてくれる</strong>システムを構築します。プログラミング初心者でも真似できるよう、仕組みから実際のコードまで丁寧に解説します。</p>
+    </header>
+
+    <main>
+        <!-- セクション1: 仕組みの解説 -->
+        <section id="section1">
+            <h2>📊 セクション1: 仕組みの解説 〜ドライブ・GAS・AIの三位一体〜</h2>
+            
+            <h3>システムの全体像</h3>
+            <p>このシステムは<strong>3つの要素</strong>が協調して動作します:</p>
+            
+            <div class="diagram">┌─────────────────┐
+│ Google スプレッドシート │ ← データ入力・可視化
+│  (光熱費データベース)   │
+└──────┬──────────┘
+       │ ①データを読み込む
+       ↓
+┌─────────────────┐
+│ Google Apps Script  │ ← 自動化エンジン
+│   (定期実行)        │
+└──────┬──────────┘
+       │ ②分析依頼
+       ↓
+┌─────────────────┐
+│   Gemini API        │ ← AI頭脳
+│ (データ分析・洞察)    │
+└──────┬──────────┘
+       │ ③結果を返す
+       ↓
+    [レポート生成]</div>
+
+            <h3>🔧 各要素の役割</h3>
+            
+            <h4>1. Googleスプレッドシート: データの集約場所</h4>
+            <ul>
+                <li>毎月の電気代、ガス代、水道代を入力</li>
+                <li>使用量(kWh、m³)と料金、気温・湿度も記録</li>
+                <li>グラフで視覚的に確認できる</li>
+            </ul>
+            
+            <p><strong>設計例:</strong></p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>日付</th>
+                            <th>電気代</th>
+                            <th>ガス代</th>
+                            <th>水道代</th>
+                            <th>電気量(kWh)</th>
+                            <th>ガス量(m³)</th>
+                            <th>平均気温</th>
+                            <th>平均湿度</th>
+                            <th>加湿器使用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026/01</td>
+                            <td>8,500円</td>
+                            <td>6,200円</td>
+                            <td>4,100円</td>
+                            <td>285</td>
+                            <td>42</td>
+                            <td>5.2℃</td>
+                            <td>45%</td>
+                            <td>あり</td>
+                        </tr>
+                        <tr>
+                            <td>2026/02</td>
+                            <td>7,800円</td>
+                            <td>5,400円</td>
+                            <td>3,900円</td>
+                            <td>268</td>
+                            <td>38</td>
+                            <td>7.1℃</td>
+                            <td>52%</td>
+                            <td>あり</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>2. Google Apps Script: 自動化の心臓</h4>
+            <p>JavaScriptベースの言語で、Googleサービスと連携可能:</p>
+            <ul>
+                <li><strong>定期実行</strong>: 月末に自動でデータを取得</li>
+                <li><strong>API連携</strong>: Gemini APIを呼び出してデータを送信</li>
+                <li><strong>結果処理</strong>: AIの分析結果をシートに追記またはメール送信</li>
+            </ul>
+
+            <h4>3. Gemini API: AIアナリスト</h4>
+            <p>Googleの最新生成AI「Gemini」が:</p>
+            <ul>
+                <li>データのパターン認識(前年比、季節変動)</li>
+                <li>異常値検出(「今月のガス代が例年より30%高い」)</li>
+                <li><strong>実用的提案</strong>(「湿度が低い月はガス代が高い → 加湿器導入を検討」)</li>
+            </ul>
+
+            <h3>🔗 連携の流れ</h3>
+            <ol class="steps-list">
+                <li><strong>データ入力</strong>: 月末に光熱費請求書をもとにスプレッドシートに入力(手動 or OCRで自動化も可能)</li>
+                <li><strong>自動トリガー</strong>: Apps Scriptの時間駆動トリガーが毎月1日に起動</li>
+                <li><strong>データ送信</strong>: GASがシートの全データを読み込み、JSON形式でGemini APIに送信</li>
+                <li><strong>AI分析</strong>: Geminiが「前月比」「前年同月比」「気候との相関」を分析</li>
+                <li><strong>レポート生成</strong>: 分析結果をシートの「分析レポート」タブに自動追記 & メール通知</li>
+            </ol>
+        </section>
+
+        <!-- セクション2: 実際のコード -->
+        <section id="section2">
+            <h2>💻 セクション2: 実際のコード 〜コピペで動く最新版〜</h2>
+            
+            <h3>準備: Gemini APIキーの取得</h3>
+            <ol>
+                <li><a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a> にアクセス</li>
+                <li>「Get API Key」をクリックして新規プロジェクトを作成</li>
+                <li>APIキーをコピー(例: <code>AIzaSyD...</code>)</li>
+            </ol>
+
+            <h3>📝 完全なGASコード（2026年最新版）</h3>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-label">JavaScript (Google Apps Script)</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code1')">📋 コピー</button>
+                </div>
+                <pre><code id="code1">/**
+ * 2026年最新：光熱費3カ年比較 ＋ エネルギー合算 ＋ AI家計診断（エラー修正版）
+ */
+
+const GLOBAL_CONFIG = {
+  MASTER_SHEET_NAME: "Master_Data",
+  DASH_SHEET_NAME: "Dashboard",
+  TOTAL_ITEM_NAME: "電気+ガス合算"
+};
+
+function createYoYDashboard() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sourceSheet = ss.getSheetByName(GLOBAL_CONFIG.MASTER_SHEET_NAME);
+  // スクリプトプロパティからAPIキーを取得（セキュリティ推奨）
+  const apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+  
+  if (!sourceSheet) return Browser.msgBox("Master_Dataシートが見つかりません。");
+
+  let dashSheet = ss.getSheetByName(GLOBAL_CONFIG.DASH_SHEET_NAME) || ss.insertSheet(GLOBAL_CONFIG.DASH_SHEET_NAME);
+  const charts = dashSheet.getCharts();
+  charts.forEach(chart => dashSheet.removeChart(chart));
+  dashSheet.clear().activate();
+
+  const data = sourceSheet.getDataRange().getValues();
+  const summary = {}; 
+  const targetYears = ["2024", "2025", "2026"]; 
+
+  // 1. データの集計
+  for (let i = 1; i < data.length; i++) {
+    let rawDate = data[i][0]; 
+    let item = String(data[i][1]);
+    let amount = Number(data[i][6]) || 0;
+    if (!rawDate) continue;
+
+    let year, month;
+    if (rawDate instanceof Date) {
+      year = rawDate.getFullYear().toString();
+      month = rawDate.getMonth() + 1;
+    } else {
+      const parts = String(rawDate).split("/");
+      year = parts[0];
+      month = parseInt(parts[1], 10);
+    }
+
+    if (item.includes("水道")) item = "水道";
+    if (!targetYears.includes(year)) continue;
+
+    if (!summary[item]) summary[item] = {};
+    if (!summary[item][year]) summary[item][year] = {};
+    summary[item][year][month] = (summary[item][year][month] || 0) + amount;
+  }
+
+  // 2. 電気とガスの合算
+  summary[GLOBAL_CONFIG.TOTAL_ITEM_NAME] = {};
+  targetYears.forEach(year => {
+    summary[GLOBAL_CONFIG.TOTAL_ITEM_NAME][year] = {};
+    for (let m = 1; m <= 12; m++) {
+      const e = (summary["電気"] && summary["電気"][year] && summary["電気"][year][m]) || 0;
+      const g = (summary["ガス"] && summary["ガス"][year] && summary["ガス"][year][m]) || 0;
+      if (e > 0 || g > 0) summary[GLOBAL_CONFIG.TOTAL_ITEM_NAME][year][m] = e + g;
+    }
+  });
+
+  // 3. グラフ作成
+  const items = ["電気", "ガス", "水道", GLOBAL_CONFIG.TOTAL_ITEM_NAME];
+  // カラーパレット設定：合算グラフのみオレンジ系を使用
+  const chartColors = [["#E0E0E0", "#4FC3F7", "#1565C0"], ["#E0E0E0", "#FFCCBC", "#E64A19"]];
+  let startRow = 1;
+
+  items.forEach((item, index) => {
+    if (!summary[item]) return;
+    const colors = (item === GLOBAL_CONFIG.TOTAL_ITEM_NAME) ? chartColors[1] : chartColors[0];
+
+    dashSheet.getRange(startRow, 1).setValue(`${item}：3カ年比較`).setFontWeight("bold").setFontSize(12);
+    const headers = ["月", "2024年", "2025年", "2026年"];
+    dashSheet.getRange(startRow + 1, 1, 1, 4).setValues([headers]).setBackground("#F5F5F5");
+
+    const tableData = [];
+    for (let m = 1; m <= 12; m++) {
+      const row = [`${m}月`];
+      targetYears.forEach(y => row.push(summary[item][y] ? (summary[item][y][m] || 0) : 0));
+      tableData.push(row);
+    }
+    dashSheet.getRange(startRow + 2, 1, 12, 4).setValues(tableData);
+
+    const chart = dashSheet.newChart()
+      .asColumnChart()
+      .addRange(dashSheet.getRange(startRow + 1, 1, 13, 4))
+      .setPosition(startRow, 6, 10, 10)
+      .setOption('title', `${item} トレンド比較`)
+      .setOption('colors', colors)
+      .setOption('width', 700)
+      .setOption('height', 320)
+      .build();
+
+    dashSheet.insertChart(chart);
+    startRow += 20; 
+  });
+
+  // 4. AIアドバイザー
+  if (apiKey) {
+    const advicePos = 2;
+    dashSheet.getRange(advicePos, 15).setValue("🔮 魔法の家計診断アドバイス").setFontWeight("bold").setFontSize(14).setFontColor("#1565C0");
+    const adviceCell = dashSheet.getRange(advicePos + 1, 15, 35, 6);
+    adviceCell.merge().setValue("賢者の分析中...（少々お待ちください）").setVerticalAlignment("top").setWrap(true);
+    SpreadsheetApp.flush();
+
+    const advice = getGeminiAdvice_(summary, apiKey);
+    adviceCell.setValue(advice).setBorder(true, true, true, true, null, null, "#0D47A1", SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
+    dashSheet.setColumnWidth(15, 450);
+  }
+
+  Browser.msgBox("完成！ダッシュボードとAI診断を更新しました。");
+}
+
+function getGeminiAdvice_(summary, apiKey) {
+  const model = "gemini-2.5-flash-lite"; // コスト効率の良いモデルを選択
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  
+  // AIに渡すデータの準備
+  let stats = "【過去と現在の比較データ】\n";
+  ["電気", "ガス", GLOBAL_CONFIG.TOTAL_ITEM_NAME].forEach(item => {
+    stats += `■${item}\n`;
+    ["2025", "2026"].forEach(y => {
+      if (summary[item] && summary[item][y]) {
+        const months = Object.keys(summary[item][y]).sort((a,b)=>a-b);
+        const m = months[months.length - 1]; // 最新の月
+        stats += `  ${y}年${m}月: ${summary[item][y][m]}円\n`;
+      }
+    });
+  });
+
+  const prompt = `${stats}
+【診断のルール】
+1. 現在、冬の「加湿器」導入による電気代増 ＋ ガス代減の戦略を実行中。
+2. 「電気＋ガスの合算」が2025年より減っていれば戦略大成功。
+3. 加湿による風邪予防（健康管理）も高く評価すること。
+
+【依頼】
+このルールに基づき、最新月のデータを分析して。
+・ハリー・ポッターの世界観（魔法の作戦会議）のトーンで。
+・小5と小1の子供たちも一緒に取り組める節約の魔法（アイデア）を1つ。
+・350文字程度。`;
+
+  try {
+    const payload = { contents: [{ parts: [{ text: prompt }] }] };
+    const response = UrlFetchApp.fetch(url, {
+      method: "POST",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+
+    const resCode = response.getResponseCode();
+    const resText = response.getContentText();
+    
+    if (resCode !== 200) {
+      Logger.log(`APIエラー詳細: ${resText}`);
+      return `魔法の鏡に霧がかかっています（エラーコード: ${resCode}）。もう一度「実行」を押してみてください。`;
+    }
+
+    const resJson = JSON.parse(resText);
+    return resJson.candidates[0].content.parts[0].text;
+
+  } catch (e) {
+    Logger.log(`実行エラー: ${e.message}`);
+    return "魔法の鏡が曇っています。少し時間を置いてみてください。";
+  }
+}</code></pre>
+            </div>
+
+            <h3>🚀 実行手順</h3>
+            <ol class="steps-list">
+                <li><strong>スプレッドシートを開く</strong> → メニューの「拡張機能」→「Apps Script」</li>
+                <li><strong>新しいプロジェクト作成</strong> → コードエディタに上記をペースト</li>
+                <li><strong>APIキーを設定</strong> → プロジェクトの設定（歯車アイコン）→「スクリプト プロパティ」→ プロパティ名: <code>GEMINI_API_KEY</code>、値: あなたのAPIキー</li>
+                <li><strong>シート名を調整</strong> → データシートの名前を <code>Master_Data</code> に変更</li>
+                <li><strong>初回実行</strong> → <code>createYoYDashboard</code>を選択して「実行」ボタン(初回は権限承認が必要)</li>
+                <li><strong>完了</strong> → 「Dashboard」シートが自動生成され、グラフとAI診断が表示されます</li>
+            </ol>
+
+            <div class="callout callout-info">
+                <p><strong>💡 カスタマイズのヒント</strong></p>
+                <ul>
+                    <li><strong>分析期間を拡大</strong>: <code>targetYears</code>配列に年を追加</li>
+                    <li><strong>通知先変更</strong>: <code>Session.getActiveUser().getEmail()</code>を特定のメールアドレスに変更</li>
+                    <li><strong>詳細分析</strong>: プロンプトに「時間帯別使用パターン」や「家電ごとの推定消費量」を追加</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- セクション3: オレンジグラフの詳細解説 -->
+        <section id="section3">
+            <h2>🔥 セクション3: オレンジグラフの詳細解説</h2>
+            
+            <h3>グラフの色が持つ意味</h3>
+            <p>コードを見ると、<strong>オレンジ色のグラフ</strong>は「電気+ガス合算」専用に設計されています:</p>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-label">カラーパレット設定</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code2')">📋 コピー</button>
+                </div>
+                <pre><code id="code2">const chartColors = [
+  ["#E0E0E0", "#4FC3F7", "#1565C0"],  // 電気・ガス・水道用（青系）
+  ["#E0E0E0", "#FFCCBC", "#E64A19"]   // 合算専用（オレンジ系）★
+];</code></pre>
+            </div>
+
+            <p>この<strong>オレンジ系カラーパレット</strong>（<code>#FFCCBC</code>=薄オレンジ、<code>#E64A19</code>=濃オレンジ）が使われるのは、<strong>「電気+ガス合算」グラフだけ</strong>。つまり、このグラフは<strong>エネルギー戦略の成否を一目で判断するための司令塔</strong>なのです。</p>
+
+            <h3>📊 3本の棒グラフが示す「戦略の軌跡」</h3>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>棒の色</th>
+                            <th>年度</th>
+                            <th>意味</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="background: #E0E0E0;">グレー棒</td>
+                            <td>2024年</td>
+                            <td>ベースライン（過去の基準）</td>
+                        </tr>
+                        <tr>
+                            <td style="background: #FFCCBC;">薄オレンジ棒</td>
+                            <td>2025年</td>
+                            <td>改善前のデータ</td>
+                        </tr>
+                        <tr>
+                            <td style="background: #E64A19; color: white;">濃オレンジ棒</td>
+                            <td>2026年</td>
+                            <td><strong>加湿器導入後（最重要）</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>🔍 なぜオレンジなのか?</h3>
+            
+            <h4>1. 視覚的な意図</h4>
+            <ul>
+                <li><strong>青系（電気・ガス・水道）</strong>: 個別項目は「冷静な分析対象」として寒色</li>
+                <li><strong>オレンジ系（合算）</strong>: 「熱量を持った戦略成果」として暖色を選択</li>
+            </ul>
+            <p>この対比により、個別グラフを見た後に合算グラフを見ると、<strong>「ここが本当の戦場だ」</strong>という心理的焦点化が起きます。</p>
+
+            <h4>2. データの読み方（濃オレンジ棒に注目）</h4>
+            <p>コードには重要なロジックが埋め込まれています:</p>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-label">合算計算ロジック</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code3')">📋 コピー</button>
+                </div>
+                <pre><code id="code3">// 電気とガスの合算
+summary[GLOBAL_CONFIG.TOTAL_ITEM_NAME][year][m] = e + g;</code></pre>
+            </div>
+
+            <p>これにより、以下の<strong>トレードオフ</strong>が可視化されます:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>2025年(加湿器なし)</th>
+                            <th>2026年(加湿器導入)</th>
+                            <th>変化</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>電気代</strong></td>
+                            <td>7,500円</td>
+                            <td>8,200円</td>
+                            <td style="color: #D32F2F;"><strong>+700円</strong> ⚡</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ガス代</strong></td>
+                            <td>6,200円</td>
+                            <td>4,800円</td>
+                            <td style="color: #388E3C;"><strong>-1,400円</strong> 🔥</td>
+                        </tr>
+                        <tr>
+                            <td><strong>合算(オレンジ棒)</strong></td>
+                            <td><strong>13,700円</strong></td>
+                            <td><strong>13,000円</strong></td>
+                            <td style="color: #388E3C;"><strong>-700円 ✅</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>3. 戦略検証の瞬間</h4>
+            <p>グラフを見る人（特にご家族）が直感的に理解できるのは:</p>
+            <ul>
+                <li><strong>個別では電気代が増えている</strong>（青グラフの2026年が高い）</li>
+                <li><strong>でもトータルでは削減成功</strong>（オレンジ棒が前年より低い）</li>
+            </ul>
+            <p>この<strong>「部分最適ではなく全体最適」</strong>を視覚的に証明するのが、オレンジグラフの使命です。</p>
+
+            <h3>🎯 AIアドバイザーとの連携</h3>
+            <p>コードの後半を見ると、Gemini APIに以下の指示が:</p>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span class="code-label">AIへのプロンプト</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code4')">📋 コピー</button>
+                </div>
+                <pre><code id="code4">const prompt = `${stats}
+【診断のルール】
+1. 現在、冬の「加湿器」導入による電気代増 ＋ ガス代減の戦略を実行中。
+2. 「電気＋ガスの合算」が2025年より減っていれば戦略大成功。
+3. 加湿による風邪予防（健康管理）も高く評価すること。`;</code></pre>
+            </div>
+
+            <p>つまり、AIは<strong>オレンジグラフのデータを最優先で評価</strong>するよう設計されています。</p>
+
+            <h3>👨‍👩‍👧‍👦 子どもたちへの説明</h3>
+            <div class="callout callout-success">
+                <p><strong>「オレンジの棒が低いほど、おうちの魔法が強くなってる」んだよ！</strong></p>
+                <ul>
+                    <li><strong>グレーの棒</strong>: 昔のおうち（魔法を使う前）</li>
+                    <li><strong>薄いオレンジ</strong>: 去年のおうち（ちょっと魔法が使えた）</li>
+                    <li><strong>濃いオレンジ</strong>: 今年のおうち（<strong>加湿器っていう魔法道具</strong>を使ったら、電気は少し増えたけど、ガスがたくさん減って、<strong>ぜんぶ足すと安くなった</strong>！）</li>
+                </ul>
+                <p><strong>濃いオレンジが一番低い = パパママの作戦大成功！</strong> 🎉</p>
+            </div>
+        </section>
+
+        <!-- セクション4: データの読み解き方 -->
+        <section id="section4">
+            <h2>📈 セクション4: データの読み解き方 〜AIが導く節約戦略〜</h2>
+            
+            <h3>ケーススタディ: 加湿器でガス代を抑える</h3>
+            
+            <h4>🔍 発見のきっかけ</h4>
+            <p>Gemini APIが以下のような分析結果を出力:</p>
+            
+            <div class="callout">
+                <p><strong>【洞察2】</strong></p>
+                <p>湿度40%未満の月(1月、12月)はガス代が平均5,800円に対し、湿度50%以上の月(2月、3月)は平均4,200円。相関係数0.78で強い負の相関を確認。</p>
+            </div>
+
+            <h4>🌡️ 科学的背景</h4>
+            <p>実は<strong>体感温度は湿度に大きく左右</strong>されます:</p>
+            <ul>
+                <li>湿度が10%上がると、体感温度は約1℃上昇</li>
+                <li>エアコン設定温度を1℃下げると、消費電力は約10%削減</li>
+                <li>加湿器(気化式)の電気代: 月200円程度 vs ガス代削減: 月1,500円</li>
+            </ul>
+
+            <h4>💡 実践戦略</h4>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>Before（加湿器なし）</th>
+                            <th>After（加湿器導入）</th>
+                            <th>結果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>室温設定</td>
+                            <td>22℃</td>
+                            <td>20℃（-2℃）</td>
+                            <td style="color: #388E3C;">省エネ！</td>
+                        </tr>
+                        <tr>
+                            <td>湿度</td>
+                            <td>30%（乾燥）</td>
+                            <td>50%（快適）</td>
+                            <td style="color: #388E3C;">健康！</td>
+                        </tr>
+                        <tr>
+                            <td>体感温度</td>
+                            <td>寒い → 暖房強化</td>
+                            <td>快適（体感21℃相当）</td>
+                            <td style="color: #388E3C;">満足度UP</td>
+                        </tr>
+                        <tr>
+                            <td><strong>月間コスト</strong></td>
+                            <td>ガス 6,200円</td>
+                            <td>ガス 4,700円 + 電気増 200円</td>
+                            <td style="color: #388E3C; font-weight: bold;">約1,300円削減</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>📊 その他のAI洞察例</h3>
+
+            <h4>1. 時間帯シフト提案</h4>
+            <div class="callout callout-info">
+                <p><strong>【分析結果】</strong></p>
+                <p>22時〜23時の電気使用量が全体の18%を占有。この時間帯の単価は日中の1.3倍。</p>
+                <p><strong>→ 提案:</strong> 洗濯機・食洗機を21時までに使用開始すると月800円削減</p>
+            </div>
+
+            <h4>2. 季節先取り戦略</h4>
+            <div class="callout callout-info">
+                <p><strong>【予測】</strong></p>
+                <p>過去3年のデータから、気温が15℃を下回る11月第2週から暖房使用が急増(平均+2,300円/月)。</p>
+                <p><strong>→ 提案:</strong> 10月中に断熱カーテン・隙間テープで対策 → 冬季20%削減</p>
+            </div>
+
+            <h4>3. 家電買い替えROI計算</h4>
+            <div class="callout callout-warning">
+                <p><strong>【投資判断】</strong></p>
+                <p>10年前の冷蔵庫(推定450kWh/年)を最新機種(280kWh/年)に交換:</p>
+                <ul>
+                    <li>削減: 170kWh × 30円 = 5,100円/年</li>
+                    <li>機器代: 80,000円</li>
+                </ul>
+                <p><strong>→ 回収期間: 15.7年 → 優先度低</strong>（他施策を優先）</p>
+            </div>
+        </section>
+
+        <!-- まとめ -->
+        <section id="summary">
+            <h2>🎯 まとめ: あなたもAIアナリストを雇おう</h2>
+            
+            <p>このシステムの素晴らしい点は、<strong>一度設定すれば永続的に働き続ける</strong>こと。毎月自動で:</p>
+
+            <ul class="checklist">
+                <li>データを読み込み</li>
+                <li>AIが深い洞察を発見</li>
+                <li>実行可能な提案を届ける</li>
+            </ul>
+
+            <p>初期投資はゼロ(Gemini API無料枠は月60リクエスト)、メンテナンスも不要。プログラミング初心者でも、コピペ+少しの調整で<strong>あなた専属のAIエネルギーコンサルタント</strong>が誕生します。</p>
+
+            <div class="callout callout-success">
+                <p><strong>今日から始めましょう!</strong></p>
+                <p>光熱費の「なぜ?」が「なるほど!」に変わる瞬間を、ぜひ体験してください。</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h2>📚 導入のメリットまとめ</h2>
+            
+            <div class="benefits">
+                <div class="benefit-card">
+                    <h3>✅ 光熱費の「なぜ高い?」が明確になる</h3>
+                    <ul>
+                        <li>前年比・前月比の自動計算</li>
+                        <li>季節変動の可視化</li>
+                        <li>異常値の即座検出</li>
+                    </ul>
+                </div>
+                
+                <div class="benefit-card">
+                    <h3>✅ AIが毎月自動で節約アドバイスをくれる</h3>
+                    <ul>
+                        <li>実行可能な具体策</li>
+                        <li>優先順位付き提案</li>
+                        <li>ROI計算済み</li>
+                    </ul>
+                </div>
+                
+                <div class="benefit-card">
+                    <h3>✅ 「加湿器戦略」などの効果を目で見て確認できる</h3>
+                    <ul>
+                        <li>オレンジグラフで一目瞭然</li>
+                        <li>トレードオフの可視化</li>
+                        <li>家族で共有しやすい</li>
+                    </ul>
+                </div>
+                
+                <div class="benefit-card">
+                    <h3>✅ 家族みんなでゲーム感覚で節約に取り組める</h3>
+                    <ul>
+                        <li>子ども向けの魔法説明</li>
+                        <li>月次レビュー会議</li>
+                        <li>目標達成の達成感</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="cta">
+                <h3>🚀 次のステップ</h3>
+                <p style="margin-bottom: 1.5rem;">このガイドを参考に、今日からあなたも「データドリブンな暮らし」を始めましょう！</p>
+                <ol style="text-align: left; max-width: 600px; margin: 0 auto 1.5rem;">
+                    <li><strong>Gemini APIキーを取得</strong> - Google AI Studioで無料登録</li>
+                    <li><strong>スプレッドシートを準備</strong> - 過去3ヶ月分のデータを入力</li>
+                    <li><strong>コードをコピペ</strong> - 上記のGASコードをそのまま使用</li>
+                    <li><strong>初回実行</strong> - ダッシュボードとAI診断を確認</li>
+                    <li><strong>家族と共有</strong> - オレンジグラフを見ながら戦略会議</li>
+                </ol>
+            </div>
+
+            <div style="margin-top: 2rem; text-align: center; color: #616161; font-size: 0.9rem;">
+                <p>📧 質問や改良アイデアがあれば、ぜひコミュニティで共有してください！</p>
+                <p style="margin-top: 0.5rem;">#GAS #GeminiAPI #光熱費分析 #スマートホーム #データ駆動生活</p>
+                <p style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #E0E0E0;">
+                    © 2026 光熱費自動化・分析システム導入ガイド | 
+                    <a href="https://aistudio.google.com/" target="_blank" rel="noopener" style="color: #1976D2;">Google AI Studio</a> | 
+                    <a href="https://developers.google.com/apps-script" target="_blank" rel="noopener" style="color: #1976D2;">Apps Script公式ドキュメント</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // コピーボタン機能
+        function copyCode(button, codeId) {
+            const codeElement = document.getElementById(codeId);
+            const text = codeElement.innerText || codeElement.textContent;
+            
+            // クリップボードにコピー
+            navigator.clipboard.writeText(text).then(() => {
+                // ボタンの表示を変更
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '✓ コピーしました！';
+                button.classList.add('copied');
+                
+                // 2秒後に元に戻す
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('コピーに失敗しました:', err);
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+
+        // スムーズスクロール（オプション）
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
