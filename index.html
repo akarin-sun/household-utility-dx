@@ -281,7 +281,7 @@
         
         .steps-list li {
             counter-increment: steps;
-            padding-left: 2.5rem;
+            padding-left: 5.5rem;
             position: relative;
             margin-bottom: 1rem;
         }
@@ -690,9 +690,8 @@ function createYoYDashboard() {
       .setPosition(startRow, 6, 10, 10)
       .setOption('title', `${item} トレンド比較`)
       .setOption('colors', colors)
-      .setOption('width', 350)
+      .setOption('width', 700)
       .setOption('height', 320)
-        .setOption('legend', {position: 'bottom'})
       .build();
 
     dashSheet.insertChart(chart);
