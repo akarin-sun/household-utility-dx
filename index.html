@@ -690,8 +690,9 @@ function createYoYDashboard() {
       .setPosition(startRow, 6, 10, 10)
       .setOption('title', `${item} トレンド比較`)
       .setOption('colors', colors)
-      .setOption('width', 700)
+      .setOption('width', 350)
       .setOption('height', 320)
+        .setOption('legend', {position: 'bottom'})
       .build();
 
     dashSheet.insertChart(chart);
