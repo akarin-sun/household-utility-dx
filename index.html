@@ -500,27 +500,6 @@
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
   }
 
-  /* セクション全体の、さりげないボタニカル装飾 */
-  .trinity-flow::before,
-  .trinity-flow::after {
-    position: absolute;
-    font-size: 22px;
-    opacity: 0.35;
-    pointer-events: none;
-  }
-
-  .trinity-flow::before {
-    content: "🌿";
-    top: -12px;
-    right: 8px;
-  }
-
-  .trinity-flow::after {
-    content: "🌸";
-    bottom: -16px;
-    left: 12px;
-  }
-
   .flow-card {
     position: relative;
     background: var(--akarin-paper);
@@ -531,7 +510,27 @@
     overflow: hidden;
   }
 
-  /* 各カードの色とボタニカルあしらい（名刺連動イメージ） */
+  .flow-card h4,
+  .flow-card p {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 各カードの透かしアイコン（背後に半分隠れ・30%透明度） */
+  .flow-card--sheet::after,
+  .flow-card--script::after,
+  .flow-card--ai::after {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    font-size: 38px;
+    line-height: 1;
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+    display: block;
+  }
+
   .flow-card--sheet {
     border-left: 4px solid var(--akarin-blue-deep);
     background: linear-gradient(
@@ -543,11 +542,6 @@
 
   .flow-card--sheet::after {
     content: "🌸";
-    position: absolute;
-    bottom: 10px;
-    right: 18px;
-    font-size: 22px;
-    opacity: 0.35;
   }
 
   .flow-card--script {
@@ -561,11 +555,6 @@
 
   .flow-card--script::after {
     content: "🌿";
-    position: absolute;
-    bottom: 10px;
-    right: 18px;
-    font-size: 22px;
-    opacity: 0.35;
   }
 
   .flow-card--ai {
@@ -579,11 +568,6 @@
 
   .flow-card--ai::after {
     content: "✨";
-    position: absolute;
-    bottom: 10px;
-    right: 18px;
-    font-size: 22px;
-    opacity: 0.35;
   }
 
   .flow-card h4 {
@@ -618,10 +602,11 @@
 
   .flow-sep {
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 1.25rem;
+    font-weight: 200;
     color: #8fa0b8;
-    letter-spacing: 0.12em;
     margin: 2px 0;
+    line-height: 1;
   }
 
   .flow-sep::before,
@@ -642,14 +627,14 @@
     <p><strong>役割：</strong>光熱費データベース。データの入力・蓄積、およびグラフでの可視化を担当します。</p>
   </div>
   
-  <div class="flow-sep">TRINITY</div>
+  <div class="flow-sep">↓</div>
   
   <div class="flow-card flow-card--script">
     <h4>⚙️ 2. Google Apps Script</h4>
     <p><strong>役割：</strong>自動化エンジン。システム全体の司令塔として、定期実行やAIへの分析依頼を制御します。</p>
   </div>
   
-  <div class="flow-sep">TRINITY</div>
+  <div class="flow-sep">↓</div>
   
   <div class="flow-card flow-card--ai">
     <h4>🧠 3. Gemini API</h4>
