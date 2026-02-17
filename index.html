@@ -483,60 +483,176 @@
             <h3>システムの全体像</h3>
             <p>このシステムは<strong>3つの要素</strong>が協調して動作します:</p>
 <style>
+  :root {
+    --akarin-blue: #a7c8ff;          /* パステルブルー（メイン） */
+    --akarin-blue-deep: #4f7bcf;
+    --akarin-green: #9bc8a0;         /* セージグリーン（アクセント） */
+    --akarin-pink: #f3b3c4;          /* ほんのり温かみのある差し色 */
+    --akarin-paper: rgba(255, 255, 255, 0.96); /* マットポストのような紙感 */
+  }
+
   .trinity-flow {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin: 25px 0;
+    gap: 24px;
+    margin: 32px 0;
+    position: relative;
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
   }
-  .flow-card {
-    background-color: #f1f8ff;
-    border-left: 6px solid #0366d6;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+
+  /* セクション全体の、さりげないボタニカル装飾 */
+  .trinity-flow::before,
+  .trinity-flow::after {
+    position: absolute;
+    font-size: 22px;
+    opacity: 0.35;
+    pointer-events: none;
   }
+
+  .trinity-flow::before {
+    content: "🌿";
+    top: -12px;
+    right: 8px;
+  }
+
+  .trinity-flow::after {
+    content: "🌸";
+    bottom: -16px;
+    left: 12px;
+  }
+
+  .flow-card {
+    position: relative;
+    background: var(--akarin-paper);
+    border-radius: 12px;
+    padding: 22px 24px;
+    border: 1px solid rgba(15, 35, 95, 0.05); /* ごく細い境界線 */
+    box-shadow: 0 10px 30px rgba(15, 35, 95, 0.06); /* 柔らかい影でふんわり浮かせる */
+    overflow: hidden;
+  }
+
+  /* 各カードの色とボタニカルあしらい（名刺連動イメージ） */
+  .flow-card--sheet {
+    border-left: 4px solid var(--akarin-blue-deep);
+    background: linear-gradient(
+      135deg,
+      rgba(167, 200, 255, 0.10),
+      var(--akarin-paper)
+    );
+  }
+
+  .flow-card--sheet::after {
+    content: "🌸";
+    position: absolute;
+    bottom: 10px;
+    right: 18px;
+    font-size: 22px;
+    opacity: 0.35;
+  }
+
+  .flow-card--script {
+    border-left: 4px solid var(--akarin-green);
+    background: linear-gradient(
+      135deg,
+      rgba(155, 200, 160, 0.10),
+      var(--akarin-paper)
+    );
+  }
+
+  .flow-card--script::after {
+    content: "🌿";
+    position: absolute;
+    bottom: 10px;
+    right: 18px;
+    font-size: 22px;
+    opacity: 0.35;
+  }
+
+  .flow-card--ai {
+    border-left: 4px solid var(--akarin-pink);
+    background: linear-gradient(
+      135deg,
+      rgba(243, 179, 196, 0.10),
+      var(--akarin-paper)
+    );
+  }
+
+  .flow-card--ai::after {
+    content: "✨";
+    position: absolute;
+    bottom: 10px;
+    right: 18px;
+    font-size: 22px;
+    opacity: 0.35;
+  }
+
   .flow-card h4 {
-    margin: 0 0 8px 0 !important;
-    color: #0366d6;
+    margin: 0 0 10px 0 !important;
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1.1em;
+    font-size: 1.05rem;
+    font-weight: 600; /* 信頼感のある少し太め */
+    letter-spacing: 0.03em;
+    color: #1f3552;
   }
+
+  .flow-card--sheet h4 {
+    color: var(--akarin-blue-deep);
+  }
+
+  .flow-card--script h4 {
+    color: #2f6b4a;
+  }
+
+  .flow-card--ai h4 {
+    color: #b24b6a;
+  }
+
   .flow-card p {
     margin: 0 !important;
-    font-size: 14px;
-    color: #444;
-    line-height: 1.6;
+    font-size: 0.9rem;
+    color: #344055;
+    line-height: 1.8;
   }
+
   .flow-sep {
     text-align: center;
-    font-size: 24px;
-    color: #0366d6;
-    line-height: 1;
-    font-weight: bold;
+    font-size: 0.8rem;
+    color: #8fa0b8;
+    letter-spacing: 0.12em;
+    margin: 2px 0;
+  }
+
+  .flow-sep::before,
+  .flow-sep::after {
+    content: "";
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c5d2e4);
+    vertical-align: middle;
+    margin: 0 6px;
   }
 </style>
 
 <div class="trinity-flow">
-  <div class="flow-card">
+  <div class="flow-card flow-card--sheet">
     <h4>📊 1. Google スプレッドシート</h4>
     <p><strong>役割：</strong>光熱費データベース。データの入力・蓄積、およびグラフでの可視化を担当します。</p>
   </div>
   
-  <div class="flow-sep">↓</div>
-
-  <div class="flow-card" style="border-left-color: #28a745; background-color: #f0fff4;">
-    <h4 style="color: #28a745;">⚙️ 2. Google Apps Script</h4>
+  <div class="flow-sep">TRINITY</div>
+  
+  <div class="flow-card flow-card--script">
+    <h4>⚙️ 2. Google Apps Script</h4>
     <p><strong>役割：</strong>自動化エンジン。システム全体の司令塔として、定期実行やAIへの分析依頼を制御します。</p>
   </div>
-
-  <div class="flow-sep">↓</div>
-
-  <div class="flow-card" style="border-left-color: #d73a49; background-color: #fff5f5;">
-    <h4 style="color: #d73a49;">🧠 3. Gemini API</h4>
+  
+  <div class="flow-sep">TRINITY</div>
+  
+  <div class="flow-card flow-card--ai">
+    <h4>🧠 3. Gemini API</h4>
     <p><strong>役割：</strong>AI頭脳。最新のGeminiがデータを分析し、節約のアドバイスや将来予測のレポートを生成します。</p>
   </div>
 </div>
