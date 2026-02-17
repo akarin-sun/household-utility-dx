@@ -482,26 +482,64 @@
             
             <h3>システムの全体像</h3>
             <p>このシステムは<strong>3つの要素</strong>が協調して動作します:</p>
-            
-            <div class="diagram">┌─────────────────┐
-│ Google スプレッドシート │ ← データ入力・可視化
-│  (光熱費データベース)   │
-└──────┬──────────┘
-       │ ①データを読み込む
-       ↓
-┌─────────────────┐
-│ Google Apps Script  │ ← 自動化エンジン
-│   (定期実行)        │
-└──────┬──────────┘
-       │ ②分析依頼
-       ↓
-┌─────────────────┐
-│   Gemini API        │ ← AI頭脳
-│ (データ分析・洞察)    │
-└──────┬──────────┘
-       │ ③結果を返す
-       ↓
-    [レポート生成]</div>
+<style>
+  .trinity-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 25px 0;
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  }
+  .flow-card {
+    background-color: #f1f8ff;
+    border-left: 6px solid #0366d6;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  }
+  .flow-card h4 {
+    margin: 0 0 8px 0 !important;
+    color: #0366d6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1em;
+  }
+  .flow-card p {
+    margin: 0 !important;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+  }
+  .flow-sep {
+    text-align: center;
+    font-size: 24px;
+    color: #0366d6;
+    line-height: 1;
+    font-weight: bold;
+  }
+</style>
+
+<div class="trinity-flow">
+  <div class="flow-card">
+    <h4>📊 1. Google スプレッドシート</h4>
+    <p><strong>役割：</strong>光熱費データベース。データの入力・蓄積、およびグラフでの可視化を担当します。</p>
+  </div>
+  
+  <div class="flow-sep">↓</div>
+
+  <div class="flow-card" style="border-left-color: #28a745; background-color: #f0fff4;">
+    <h4 style="color: #28a745;">⚙️ 2. Google Apps Script</h4>
+    <p><strong>役割：</strong>自動化エンジン。システム全体の司令塔として、定期実行やAIへの分析依頼を制御します。</p>
+  </div>
+
+  <div class="flow-sep">↓</div>
+
+  <div class="flow-card" style="border-left-color: #d73a49; background-color: #fff5f5;">
+    <h4 style="color: #d73a49;">🧠 3. Gemini API</h4>
+    <p><strong>役割：</strong>AI頭脳。最新のGeminiがデータを分析し、節約のアドバイスや将来予測のレポートを生成します。</p>
+  </div>
+</div>
 
             <h3>🔧 各要素の役割</h3>
             
