@@ -450,6 +450,11 @@
             .benefits {
                 grid-template-columns: 1fr;
             }
+            
+            .toc-nav {
+                padding: 1rem 1rem 1rem 1.25rem;
+                margin-bottom: 2rem;
+            }
         }
         
         @media (max-width: 480px) {
@@ -465,6 +470,61 @@
                 font-size: 1.35rem;
             }
         }
+
+        /* 目次（TOC）ボタニカル・シンプル */
+        .toc-nav {
+            max-width: 1200px;
+            margin: 0 auto 2.5rem;
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 12px;
+            border: 1px solid rgba(15, 35, 95, 0.06);
+            box-shadow: 0 8px 24px rgba(15, 35, 95, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        .toc-nav::before {
+            content: "🌿";
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 1.1rem;
+            opacity: 0.35;
+        }
+        .toc-nav .toc-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2f6b4a;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.02em;
+        }
+        .toc-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .toc-nav li {
+            margin: 0;
+            padding: 0;
+            border-bottom: 1px solid rgba(155, 200, 160, 0.2);
+        }
+        .toc-nav li:last-child {
+            border-bottom: none;
+        }
+        .toc-nav a {
+            display: block;
+            padding: 0.6rem 0.5rem 0.6rem 1rem;
+            color: #1f3552;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: background 0.2s ease, color 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .toc-nav a:hover {
+            background: rgba(167, 200, 255, 0.15);
+            color: #4f7bcf;
+            border-left-color: #9bc8a0;
+        }
     </style>
 </head>
 <body>
@@ -476,6 +536,18 @@
     </header>
 
     <main>
+        <!-- 目次（TOC） -->
+        <nav class="toc-nav" aria-label="目次">
+            <p class="toc-title">📑 このガイドの目次</p>
+            <ul>
+                <li><a href="#section1">セクション1: 仕組みの解説 〜ドライブ・GAS・AIの三位一体〜</a></li>
+                <li><a href="#section2">セクション2: 実際のコード 〜コピペで動く最新版〜</a></li>
+                <li><a href="#section3">セクション3: オレンジグラフの詳細解説</a></li>
+                <li><a href="#section4">セクション4: データの読み解き方 〜AIが導く節約戦略〜</a></li>
+                <li><a href="#summary">まとめ: あなたもAIアナリストを雇おう</a></li>
+            </ul>
+        </nav>
+
         <!-- セクション1: 仕組みの解説 -->
         <section id="section1">
             <h2>📊 セクション1: 仕組みの解説 〜ドライブ・GAS・AIの三位一体〜</h2>
@@ -918,6 +990,43 @@ function getGeminiAdvice_(summary, apiKey) {
                 <li><strong>初回実行</strong> → <code>createYoYDashboard</code>を選択して「実行」ボタン(初回は権限承認が必要)</li>
                 <li><strong>完了</strong> → 「Dashboard」シートが自動生成され、グラフとAI診断が表示されます</li>
             </ol>
+
+            <h4>📋 Master_Data シートの列構成</h4>
+            <p>GAS が正しくデータを読むため、<strong>Master_Data</strong> シートは次の列構成にします。1行目はヘッダー、2行目以降は<strong>1行1レコード</strong>（同じ月の電気・ガス・水道は別々の行で）入力します。</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>列</th>
+                            <th>列名（例）</th>
+                            <th>説明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>A列</strong></td>
+                            <td>日付</td>
+                            <td>対象月。日付型（例: 2026/1/1）または <code>YYYY/MM</code> 形式の文字列</td>
+                        </tr>
+                        <tr>
+                            <td><strong>B列</strong></td>
+                            <td>項目</td>
+                            <td>「電気」「ガス」「水道」など。グラフでは「電気」「ガス」「水道」＋「電気+ガス合算」が自動計算されます</td>
+                        </tr>
+                        <tr>
+                            <td>C列〜F列</td>
+                            <td>（任意）</td>
+                            <td>使用量・気温・湿度など、お好みで利用可能。スクリプトは集計に A・B・G を使用</td>
+                        </tr>
+                        <tr>
+                            <td><strong>G列</strong></td>
+                            <td>金額</td>
+                            <td>その項目の金額（数値）。円単位で入力</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="margin-top: 0.75rem;"><strong>入力例：</strong> 2026年1月の電気8,500円・ガス6,200円・水道4,100円なら、3行で「日付=2026/1/1、項目=電気、金額=8500」「項目=ガス、金額=6200」「項目=水道、金額=4100」のように縦に並べます。</p>
 
             <div class="callout callout-info">
                 <p><strong>💡 カスタマイズのヒント</strong></p>
