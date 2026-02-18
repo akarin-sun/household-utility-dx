@@ -1,0 +1,6 @@
+# 電気代請求書画像抽出スクリプト用（extract_electric_bill.py）
+# 使い方: pip install -r requirements-electric-bill.txt
+
+Pillow>=10.0.0
+pillow-heif>=0.13.0
+google-generativeai>=0.3.0
