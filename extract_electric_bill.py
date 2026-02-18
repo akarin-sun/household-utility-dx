@@ -126,8 +126,13 @@ def main():
     )
     parser.add_argument(
         "--model",
-        default="gemini-1.5-pro",
-        help="使用する Gemini モデル（例: gemini-1.5-pro, gemini-1.5-flash）",
+        default="gemini-1.5-flash-latest",
+        help="使用する Gemini モデル（例: gemini-1.5-flash-latest, gemini-1.5-flash, gemini-2.0-flash-lite-preview-02-05）",
+    )
+    parser.add_argument(
+        "--list-models",
+        action="store_true",
+        help="利用可能なモデル一覧を表示して終了",
     )
     parser.add_argument(
         "-o", "--output",
@@ -142,6 +147,21 @@ def main():
     if genai is None:
         print("エラー: google-generativeai がインストールされていません。pip install google-generativeai", file=sys.stderr)
         return 1
+
+    genai.configure(api_key=args.api_key)
+
+    # モデル一覧表示
+    if args.list_models:
+        try:
+            models = genai.list_models()
+            print("利用可能な Gemini モデル:\n")
+            for m in models:
+                if "generateContent" in m.supported_generation_methods:
+                    print(f"  {m.name}")
+            return 0
+        except Exception as e:
+            print(f"エラー: モデル一覧の取得に失敗しました: {e}", file=sys.stderr)
+            return 1
 
     folder = Path(args.folder).resolve()
     if not folder.is_dir():
@@ -158,8 +178,17 @@ def main():
         print(f"エラー: 画像ファイル（{', '.join(IMAGE_EXTENSIONS)}）がありません: {folder}", file=sys.stderr)
         return 1
 
-    genai.configure(api_key=args.api_key)
-    model = genai.GenerativeModel(args.model)
+    # モデル名から models/ プレフィックスを削除（あれば）
+    model_name = args.model
+    if model_name.startswith("models/"):
+        model_name = model_name.replace("models/", "", 1)
+    
+    try:
+        model = genai.GenerativeModel(model_name)
+    except Exception as e:
+        print(f"エラー: モデル '{model_name}' が見つかりません: {e}", file=sys.stderr)
+        print(f"ヒント: --list-models で利用可能なモデルを確認できます", file=sys.stderr)
+        return 1
 
     results = []
     for path in image_paths:
